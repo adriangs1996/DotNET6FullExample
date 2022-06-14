@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace HiringTest.Entities
+namespace DataAccess
 {
     public class TestContext : DbContext
     {
