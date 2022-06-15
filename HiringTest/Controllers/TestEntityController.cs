@@ -13,10 +13,7 @@ namespace HiringTest.Controllers
         private readonly IMapper mapper;
         private readonly IApplicationService services;
 
-        public TestEntityController(
-            IMapper mapper,
-            IApplicationService services
-        )
+        public TestEntityController(IMapper mapper, IApplicationService services)
         {
             this.mapper = mapper;
             this.services = services;
