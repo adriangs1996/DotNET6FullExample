@@ -1,9 +1,8 @@
 using AutoMapper;
-using DataAccess.Contracts.UnitOfWork;
-using Domain.Entities;
 using Domain.Models.Inputs;
 using Domain.Models.Outputs;
 using Microsoft.AspNetCore.Mvc;
+using Services.Contracts;
 
 namespace HiringTest.Controllers
 {
@@ -11,24 +10,24 @@ namespace HiringTest.Controllers
     [Route("api/[controller]")]
     public class TestEntityController : ControllerBase
     {
-        private readonly IUnitOfWork UoW;
-        private readonly IMapper Mapper;
+        private readonly IMapper mapper;
+        private readonly IApplicationService services;
 
         public TestEntityController(
             IMapper mapper,
-            IUnitOfWork unitOfWork
+            IApplicationService services
         )
         {
-            UoW = unitOfWork;
-            Mapper = mapper;
+            this.mapper = mapper;
+            this.services = services;
         }
 
         [HttpGet]
         [ProducesResponseType(statusCode: StatusCodes.Status200OK, type: typeof(List<TestEntityOutDto>))]
         public async Task<IActionResult> GetAllTestEntities()
         {
-            var entities = await UoW.TestEntities.GetAllAsync();
-            var dtos = Mapper.Map<List<TestEntityOutDto>>(entities);
+            var entities = await services.GetAllTestEntities();
+            var dtos = mapper.Map<List<TestEntityOutDto>>(entities);
             return Ok(dtos);
         }
 
@@ -37,11 +36,11 @@ namespace HiringTest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetTestEntityDetails(long id)
         {
-            var entity = await UoW.TestEntities.GetByIdAsync(id);
+            var entity = await services.GetTestEntityById(id);
             if (entity is null)
                 return NotFound();
 
-            var dto = Mapper.Map<TestEntityDetails>(entity);
+            var dto = mapper.Map<TestEntityDetails>(entity);
 
             return Ok(dto);
         }
@@ -56,14 +55,9 @@ namespace HiringTest.Controllers
 
             // ModelState ensures that Name is present, thanks to
             // the [Required] attribute
-            var new_entity = Mapper.Map<TestEntity>(model);
+            var new_entity = await services.CreateTestEntity(model);
 
-            // Unit of Work allows to run insert/update/delete operations
-            // inside a business transaction
-            await UoW.TestEntities.AddAsync(new_entity);
-            await UoW.Commit();
-
-            var dto = Mapper.Map<TestEntityDetails>(new_entity);
+            var dto = mapper.Map<TestEntityDetails>(new_entity);
             return CreatedAtAction(nameof(GetTestEntityDetails), new { id = new_entity.Id }, dto);
         }
 
@@ -76,18 +70,12 @@ namespace HiringTest.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // Try to find the test entity
-            var entity = await UoW.TestEntities.GetByIdAsync(id);
+            var entity = await services.UpdateEntityIfPresent(id, model);
             if (entity is null)
                 return NotFound();
 
-            // At this point, entity is not null and it is already being tracked
-            // by the UoW session. Now we can modify it and commit the transaction
-            Mapper.Map(model, entity);
-            await UoW.Commit();
-
             // Get the output dto and provide the location of the updated resource
-            var dto = Mapper.Map<TestEntityDetails>(entity);
+            var dto = mapper.Map<TestEntityDetails>(entity);
             return AcceptedAtAction(nameof(GetTestEntityDetails), new { id = id }, dto);
         }
 
@@ -96,12 +84,9 @@ namespace HiringTest.Controllers
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         public async Task<IActionResult> DeleteTestEntity(long id)
         {
-            var entity = await UoW.TestEntities.GetByIdAsync(id);
+            var entity = await services.DeleteTestEntity(id);
             if (entity is null)
                 return NotFound();
-
-            UoW.TestEntities.Delete(entity);
-            await UoW.Commit();
 
             return Accepted();
         }
