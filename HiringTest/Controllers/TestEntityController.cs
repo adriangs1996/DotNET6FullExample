@@ -12,11 +12,17 @@ namespace HiringTest.Controllers
     {
         private readonly IMapper mapper;
         private readonly IApplicationService services;
+        private readonly INotificationService notificationService;
 
-        public TestEntityController(IMapper mapper, IApplicationService services)
+        public TestEntityController(
+            IMapper mapper, 
+            IApplicationService services,
+            INotificationService notificationService
+        )
         {
             this.mapper = mapper;
             this.services = services;
+            this.notificationService = notificationService;
         }
 
         [HttpGet]
@@ -55,6 +61,10 @@ namespace HiringTest.Controllers
             var new_entity = await services.CreateTestEntity(model);
 
             var dto = mapper.Map<TestEntityDetails>(new_entity);
+
+            // Send a notification that a new TestEntity has been created
+            await notificationService.TestEntityAdded(dto);
+            
             return CreatedAtAction(nameof(GetTestEntityDetails), new { id = new_entity.Id }, dto);
         }
 
@@ -73,7 +83,11 @@ namespace HiringTest.Controllers
 
             // Get the output dto and provide the location of the updated resource
             var dto = mapper.Map<TestEntityDetails>(entity);
-            return AcceptedAtAction(nameof(GetTestEntityDetails), new { id = id }, dto);
+
+            // Send a notification that a test entity has been edited
+            await notificationService.TestEntityEdited(dto);
+
+            return AcceptedAtAction(nameof(GetTestEntityDetails), new { id }, dto);
         }
 
         [HttpDelete("/{id}")]
@@ -84,6 +98,9 @@ namespace HiringTest.Controllers
             var entity = await services.DeleteTestEntity(id);
             if (entity is null)
                 return NotFound();
+
+            var dto = mapper.Map<TestEntityDetails>(entity);
+            await notificationService.TestEntityRemoved(dto);
 
             return Accepted();
         }

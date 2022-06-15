@@ -1,6 +1,7 @@
 using DataAccess;
 using Domain;
 using Services;
+using Services.Implementation.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,5 +31,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/notifications");
 
 app.Run();

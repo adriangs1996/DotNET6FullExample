@@ -9,6 +9,8 @@ namespace Services
         public static IServiceCollection AddServiceLayer(this IServiceCollection services)
         {
             services.AddScoped<IApplicationService, ApplicationService>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddSignalR();
             return services;
         }
     }
