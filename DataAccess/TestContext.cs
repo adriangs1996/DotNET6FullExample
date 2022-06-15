@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess
 {
@@ -9,6 +10,6 @@ namespace DataAccess
         {
         }
 
-        public DbSet<TestContext> TestItems { get; set; } = null!;
+        public DbSet<TestEntity> TestItems { get; set; } = null!;
     }
 }
