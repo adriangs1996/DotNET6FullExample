@@ -1,5 +1,6 @@
 using AutoMapper;
 using Domain.Entities;
+using Domain.Models.Inputs;
 using Domain.Models.Outputs;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ namespace Domain
         {
             CreateMap<TestEntity, TestEntityOutDto>();
             CreateMap<TestEntity, TestEntityDetails>();
+            CreateMap<TestEntityInDto, TestEntity>();
         }
     }
 
