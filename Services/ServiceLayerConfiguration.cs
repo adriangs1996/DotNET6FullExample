@@ -13,5 +13,13 @@ namespace Services
             services.AddSignalR();
             return services;
         }
+
+        public static IServiceCollection AddClientServices(this IServiceCollection services, Uri baseAddress)
+        {
+            services.AddScoped(sp => new HttpClient { BaseAddress = baseAddress });
+            services.AddSingleton<IRestService, RestService>();
+
+            return services;
+        }
     }
 }

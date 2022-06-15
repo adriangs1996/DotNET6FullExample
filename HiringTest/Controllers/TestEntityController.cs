@@ -34,7 +34,7 @@ namespace HiringTest.Controllers
             return Ok(dtos);
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(statusCode: StatusCodes.Status200OK, type: typeof(TestEntityDetails))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetTestEntityDetails(long id)
@@ -68,7 +68,7 @@ namespace HiringTest.Controllers
             return CreatedAtAction(nameof(GetTestEntityDetails), new { id = new_entity.Id }, dto);
         }
 
-        [HttpPut("/{id}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(statusCode: StatusCodes.Status202Accepted)]
         [ProducesResponseType(statusCode: StatusCodes.Status404NotFound)]
         [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest)]
@@ -90,7 +90,7 @@ namespace HiringTest.Controllers
             return AcceptedAtAction(nameof(GetTestEntityDetails), new { id }, dto);
         }
 
-        [HttpDelete("/{id}")]
+        [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         public async Task<IActionResult> DeleteTestEntity(long id)
