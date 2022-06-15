@@ -1,5 +1,5 @@
 using DataAccess;
-using Microsoft.EntityFrameworkCore;
+using Domain;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDataAccessLayer();
+builder.Services.AddDomainMappings();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
