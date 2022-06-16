@@ -26,6 +26,7 @@ namespace Services.Implementation
 
         public async Task<IEnumerable<TestEntityDetails>> GetEntities()
         {
+            Console.WriteLine(http.BaseAddress);
             return await http.GetFromJsonAsync<List<TestEntityDetails>>("api/testentity");
         }
 

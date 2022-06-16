@@ -14,6 +14,14 @@ builder.Services.AddServiceLayer();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "PermissivePolicy", builder =>
+    {
+        builder.WithOrigins("*");
+        builder.WithMethods("*");
+    });
+});
 
 //1. Configure signalR server
 
@@ -26,7 +34,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
+
+app.UseCors("PermissivePolicy");
 
 app.UseAuthorization();
 

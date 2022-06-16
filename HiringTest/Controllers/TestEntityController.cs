@@ -26,11 +26,11 @@ namespace HiringTest.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(statusCode: StatusCodes.Status200OK, type: typeof(List<TestEntityOutDto>))]
+        [ProducesResponseType(statusCode: StatusCodes.Status200OK, type: typeof(List<TestEntityDetails>))]
         public async Task<IActionResult> GetAllTestEntities()
         {
             var entities = await services.GetAllTestEntities();
-            var dtos = mapper.Map<List<TestEntityOutDto>>(entities);
+            var dtos = mapper.Map<List<TestEntityDetails>>(entities);
             return Ok(dtos);
         }
 

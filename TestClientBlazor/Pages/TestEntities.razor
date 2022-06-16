@@ -1,0 +1,42 @@
+@page "/testentities"
+@inject IRestService service
+
+
+<PageTitle> Test Entities </PageTitle>
+
+<h3> Test Entities </h3>
+
+@if (entities == null)
+{
+    <p><em>Loading</em></p>
+}
+else
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>IsComplete</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var entity in entities)
+        {
+            <tr>
+                <td>@entity.Name</td>
+                <td>@entity.IsComplete</td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+@code {
+    private List<TestEntityDetails> entities;
+    
+        protected override async Task OnInitializedAsync()
+        {
+            entities = (await service.GetEntities()).ToList();
+        }
+}
