@@ -14,12 +14,12 @@ namespace Services.Implementation
         /// Entrypoint to access all Repositories. Also handles transactional
         /// operations.
         /// </summary>
-        private readonly IUnitOfWork uow;
+        private readonly IUnitOfWork _uow;
 
         /// <summary>
         /// Utility to easily update and map objects.
         /// </summary>
-        private readonly IMapper mapper;
+        private readonly IMapper _mapper;
         
         /// <summary>
         /// Constructor based Dependency Injection.
@@ -28,8 +28,8 @@ namespace Services.Implementation
         /// <param name="mapper"></param>
         public ApplicationService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            uow = unitOfWork;
-            this.mapper = mapper;
+            _uow = unitOfWork;
+            this._mapper = mapper;
         }
 
         /// <summary>
@@ -45,13 +45,13 @@ namespace Services.Implementation
         /// </returns>
         public async Task<TestEntity> CreateTestEntity(TestEntityInDto form)
         {
-            var new_entity = mapper.Map<TestEntity>(form);
+            var newEntity = _mapper.Map<TestEntity>(form);
             // Unit of Work allows to run insert/update/delete operations
             // inside a business transaction
-            await uow.TestEntities.AddAsync(new_entity);
-            await uow.Commit();
+            await _uow.TestEntities.AddAsync(newEntity);
+            await _uow.Commit();
 
-            return new_entity;
+            return newEntity;
         }
 
         /// <summary>
@@ -61,14 +61,14 @@ namespace Services.Implementation
         /// <returns>
         /// The deleted <see cref="TestEntity"/> on success, null otherwise 
         /// </returns>
-        public async Task<TestEntity> DeleteTestEntity(long id)
+        public async Task<TestEntity?> DeleteTestEntity(long id)
         {
-            var entity = await uow.TestEntities.GetByIdAsync(id);
+            var entity = await _uow.TestEntities.GetByIdAsync(id);
             if (entity is null)
                 return null;
 
-            uow.TestEntities.Delete(entity);
-            await uow.Commit();
+            _uow.TestEntities.Delete(entity);
+            await _uow.Commit();
             return entity;
         }
 
@@ -78,7 +78,7 @@ namespace Services.Implementation
         /// <returns></returns>
         public async Task<IEnumerable<TestEntity>> GetAllTestEntities()
         {
-            return await uow.TestEntities.GetAllAsync();
+            return await _uow.TestEntities.GetAllAsync();
         }
 
         /// <summary>
@@ -88,9 +88,9 @@ namespace Services.Implementation
         /// <returns>
         /// A <see cref="TestEntity"/> on success, null if not found.
         /// </returns>
-        public async Task<TestEntity> GetTestEntityById(long id)
+        public async Task<TestEntity?> GetTestEntityById(long id)
         {
-            return await uow.TestEntities.GetByIdAsync(id);
+            return await _uow.TestEntities.GetByIdAsync(id);
         }
 
         /// <summary>
@@ -102,17 +102,17 @@ namespace Services.Implementation
         /// <returns>
         /// The updated <see cref="TestEntity"/> on success, null if not found.
         /// </returns>
-        public async Task<TestEntity> UpdateEntityIfPresent(long id, TestEntityInDto form)
+        public async Task<TestEntity?> UpdateEntityIfPresent(long id, TestEntityInDto form)
         {
-            var entity = await uow.TestEntities.GetByIdAsync(id);
+            var entity = await _uow.TestEntities.GetByIdAsync(id);
 
             if (entity is null)
                 return null;
 
             // At this point, entity is not null and it is already being tracked
             // by the UoW session. Now we can modify it and commit the transaction
-            mapper.Map(form, entity);
-            await uow.Commit();
+            _mapper.Map(form, entity);
+            await _uow.Commit();
 
             return entity;
         }

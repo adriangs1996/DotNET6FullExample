@@ -37,7 +37,7 @@ namespace DataAccess.Implementations
             return await _context.Set<TEntity>().ToListAsync();
         }
 
-        public async Task<TEntity> GetByIdAsync(TEntityId id)
+        public async Task<TEntity?> GetByIdAsync(TEntityId id)
         {
             return await _context.Set<TEntity>().FindAsync(id);
         }

@@ -2,11 +2,7 @@
 using System;
 using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
-using Services;
 using Services.Contracts;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,15 +12,20 @@ using TestClientBlazor.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure server environment variables
+var serverApiEnvironmentAdress = Environment.GetEnvironmentVariable("SERVER_API");
+if (string.IsNullOrEmpty(serverApiEnvironmentAdress))
+    serverApiEnvironmentAdress = builder.Configuration.GetValue<string>("serverApi");
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddScoped(sp =>
-    new HttpClient { BaseAddress = new Uri(builder.Configuration.GetValue<string>("serverApi")) });
+    new HttpClient { BaseAddress = new Uri(serverApiEnvironmentAdress) });
 
 builder.Services.AddHttpClient<RestService>(client =>
-    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("serverApi")));
+    client.BaseAddress = new Uri(serverApiEnvironmentAdress));
 
 builder.Services.AddScoped<IRestService, RestService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();

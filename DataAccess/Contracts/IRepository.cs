@@ -9,7 +9,7 @@ namespace DataAccess.Contracts
     {
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> filter);
-        Task<TEntity> GetByIdAsync(TEntityId id);
+        Task<TEntity?> GetByIdAsync(TEntityId id);
         Task AddAsync(TEntity entity);
         void Delete(TEntity entity);
     }

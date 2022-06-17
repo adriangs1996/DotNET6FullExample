@@ -17,4 +17,4 @@ RUN dotnet publish HiringTest -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT [ "dotnet" "HiringTest.dll"]
+ENTRYPOINT [ "dotnet", "HiringTest.dll"]

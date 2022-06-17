@@ -56,8 +56,14 @@ else
     {
         _entities = (await _service.GetEntities()).ToList();
 
+        var connection = Environment.GetEnvironmentVariable("NOTIFICATION_HUB");
+        Uri uri;
+        if (string.IsNullOrEmpty(connection))
+            uri = _navigationManager.ToAbsoluteUri("/notifications");
+        else
+            uri = new(connection);
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(_navigationManager.ToAbsoluteUri("/notifications"))
+            .WithUrl(uri)
             .Build();
 
         _hubConnection.On<TestEntityDetails>("TestEntityRemoved", details =>
