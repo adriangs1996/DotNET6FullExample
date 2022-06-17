@@ -1,5 +1,7 @@
 @page "/testentities"
-@inject IRestService service
+@inject IRestService _service
+@inject NavigationManager _navigationManager
+@inject ToastService _toastService
 
 
 <PageTitle> Test Entities </PageTitle>
@@ -8,35 +10,67 @@
 
 @if (entities == null)
 {
-    <p><em>Loading</em></p>
+    <p>
+        <em>Loading</em>
+    </p>
 }
 else
 {
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th>Name</th>
             <th>IsComplete</th>
-            <th></th>
+            <th>
+                <button class="btn btn-success" @onclick="() => AddTestEntity()">Add</button>
+            </th>
         </tr>
-    </thead>
-    <tbody>
-        @foreach(var entity in entities)
+        </thead>
+        <tbody>
+        @foreach (var entity in entities)
         {
             <tr>
                 <td>@entity.Name</td>
                 <td>@entity.IsComplete</td>
-                <td></td>
+                <td>
+                    <button type="button" class="btn btn-primary" @onclick="(() => EditTestEntity(entity.Id))">
+                        Edit
+                        <i
+                            class="oi oi-pencil">
+                        </i>
+                    </button>
+                    <button type="button" class="btn btn-danger" @onclick="() => DeleteTestEntity(entity.Id)">Delete</button>
+                </td>
             </tr>
         }
-    </tbody>
-</table>
+        </tbody>
+    </table>
 }
+
 @code {
     private List<TestEntityDetails> entities;
-    
-        protected override async Task OnInitializedAsync()
-        {
-            entities = (await service.GetEntities()).ToList();
-        }
+
+    protected override async Task OnInitializedAsync()
+    {
+        entities = (await _service.GetEntities()).ToList();
+    }
+
+    void EditTestEntity(long id)
+    {
+        _navigationManager.NavigateTo($"/testentity/{id}");
+    }
+
+    void AddTestEntity()
+    {
+        _navigationManager.NavigateTo("/testentity/");
+    }
+
+    async Task DeleteTestEntity(long id)
+    {
+        var entityToDelete = entities.First(e => e.Id == id);
+        await _service.DeleteEntity(id);
+        _toastService.ShowToast($"Deleted {entityToDelete.Name}", ToastLevel.Info);
+        entities = entities.Where(e => e.Id != entityToDelete.Id).ToList();
+    }
+
 }

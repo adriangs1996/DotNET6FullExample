@@ -1,0 +1,84 @@
+@page "/testentity"
+@page "/testentity/{id:long}"
+@inject IRestService _service
+@inject ToastService _toastService
+@inject NavigationManager _navigationManager
+
+@if (_entity == null)
+{
+    <PageTitle> Create Test Entity </PageTitle>
+    <h3> Create a Test Entity </h3>
+}
+else
+{
+    <PageTitle> Edit Test Entity </PageTitle>
+    <h3> Edit @_entity.Name </h3>
+}
+
+<EditForm Model="_form" OnSubmit="HandleSubmit" class="mt-5">
+    <div class="row mb-4">
+        <div class="col-6">
+            <InputText id="name" @bind-Value="_form.Name" class="form-control" placeholder="name"></InputText>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <label for="isComplete" class="form-check-label">IsComplete</label>
+            <InputCheckbox id="isComplete" @bind-Value="_form.IsComplete" class="form-check-input"></InputCheckbox>
+        </div>
+    </div>
+    <br>
+    <div class="row ">
+        <div class="col-4">
+            <button type="submit" class="btn btn-success">@_btnText</button>
+        </div>
+    </div>
+</EditForm>
+
+@code
+{
+    private string _btnText = string.Empty;
+    private TestEntityDetails _entity;
+    TestEntityInDto _form = new();
+
+    [Parameter]
+    public long? Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _btnText = "Add";
+        if (Id != null)
+        {
+            _entity = await _service.GetEntityDetails(Id.Value);
+            if (_entity != null)
+            {
+                _btnText = "Save";
+                _form = new TestEntityInDto {Name = _entity.Name, IsComplete = _entity.IsComplete};
+            }
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != null)
+        {
+            _entity = await _service.GetEntityDetails(Id.Value);
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if (Id != null)
+        {
+            await _service.UpdateEntity(Id.Value, _form);
+            _toastService.ShowToast("Updated", ToastLevel.Success);
+            _navigationManager.NavigateTo("/testentities/");
+        }
+        else
+        {
+            await _service.CreateEntity(_form);
+            _toastService.ShowToast("Created new Test Entity", ToastLevel.Success);
+            _navigationManager.NavigateTo("/testentities/");
+        }
+    }
+}
