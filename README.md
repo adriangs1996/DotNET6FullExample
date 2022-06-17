@@ -80,7 +80,78 @@ is modified inside the client.
 
 When we create a entity using the API this is what happens:
 
-<p>
+<p align="middle">
     <img src="img/blazor-warning.png" alt="warning-blazor" width="45%">
     <img src="img/api-warning.png" alt="api-warning" width="45%">
 </p>
+
+This is accomplish using an `IHostedService` for listening to the Azure Broker
+and the forwarding the events through a SignalR Hub that the TestEntities razor
+page is connecting and listening to.
+
+## How to run it
+
+Is quite simple to run the app, just clone the repo:
+
+```console
+$ git clone https://github.com/adriangs1996/DotNET6FullExample.git
+```
+
+Then access the project folder and install the depedencies and build the project:
+
+```console
+$ dotnet restore HiringTest
+$ dotnet restore TestClientBlazor
+```
+
+and then run this in two terminals in parallel:
+
+```console
+$ # Run the client
+$ dotnet watch run -p TestClientBlazor
+```
+
+```console
+$ # Run the API
+$ dotnet watch run -p HiringTest
+```
+
+Alternatively, I provide a docker-compose.yml so you can run the project
+using docker. Make sure you have installed docker compose plugin and run:
+
+```console
+$ docker compose up -d
+
+[+] Running 3/3
+ ⠿ Network hiringtest_default         Created                                             0.7s
+ ⠿ Container hiringtest-blazor-app-1  Created                                             2.9s
+ ⠿ Container hiringtest-net6-api-1    Created                                             2.9s
+Attaching to hiringtest-blazor-app-1, hiringtest-net6-api-1
+hiringtest-blazor-app-1  | warn: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[60]
+hiringtest-blazor-app-1  |       Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. Protected data will be unavailable when container is destroyed.
+hiringtest-net6-api-1    | info: Microsoft.Hosting.Lifetime[14]
+hiringtest-net6-api-1    |       Now listening on: http://[::]:8000
+hiringtest-net6-api-1    | info: Microsoft.Hosting.Lifetime[0]
+hiringtest-net6-api-1    |       Application started. Press Ctrl+C to shut down.
+hiringtest-net6-api-1    | info: Microsoft.Hosting.Lifetime[0]
+hiringtest-net6-api-1    |       Hosting environment: Development
+hiringtest-net6-api-1    | info: Microsoft.Hosting.Lifetime[0]
+hiringtest-net6-api-1    |       Content root path: /app/
+hiringtest-blazor-app-1  | warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+hiringtest-blazor-app-1  |       No XML encryptor configured. Key {706c4340-4d84-46f7-acc7-d9759c3e0747} may be persisted to storage in unencrypted form.
+hiringtest-blazor-app-1  | Starting Azure Subscriber
+hiringtest-blazor-app-1  | Connected
+hiringtest-blazor-app-1  | info: Microsoft.Hosting.Lifetime[14]
+hiringtest-blazor-app-1  |       Now listening on: http://0.0.0.0:5010
+hiringtest-blazor-app-1  | info: Microsoft.Hosting.Lifetime[0]
+hiringtest-blazor-app-1  |       Application started. Press Ctrl+C to shut down.
+hiringtest-blazor-app-1  | info: Microsoft.Hosting.Lifetime[0]
+hiringtest-blazor-app-1  |       Hosting environment: Development
+hiringtest-blazor-app-1  | info: Microsoft.Hosting.Lifetime[0]
+hiringtest-blazor-app-1  |       Content root path: /app/
+```
+
+That's it, the app is now being served at 
+<a href="http://localhost:8000">http://localhost:8000</a>
+and the API is being served at 
+<a href="http://localhost:5000"> http://localhost:5000 </a>
