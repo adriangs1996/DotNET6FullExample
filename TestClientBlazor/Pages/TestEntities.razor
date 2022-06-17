@@ -62,8 +62,24 @@ else
 
         _hubConnection.On<TestEntityDetails>("TestEntityRemoved", details =>
         {
-            _toastService.ShowToast($"Deleted {details.Name}", ToastLevel.Warning);
+            _toastService.ShowToast($"Deleted {details.Id} outside the client.", ToastLevel.Warning);
             _entities = _entities.Where(e => e.Id != details.Id).ToList();
+            InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection.On<TestEntityDetails>("TestEntityEdited", details =>
+        {
+            _toastService.ShowToast($"Edited {details.Id} outside the client", ToastLevel.Warning);
+            var edited = _entities.First(e => e.Id == details.Id);
+            edited.IsComplete = details.IsComplete;
+            edited.Name = details.Name;
+            InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection.On<TestEntityDetails>("TestEntityAdded", details =>
+        {
+            _toastService.ShowToast($"Added {details.Id} outside the client", ToastLevel.Warning);
+            _entities.Add(details);
             InvokeAsync(StateHasChanged);
         });
 
