@@ -1,4 +1,4 @@
-#Hiring Test Project
+# Hiring Test Project
 
 The test consist in a very simple CRUD App that
 manages "TestEntity" objects. Being simple, is not justification
@@ -6,7 +6,7 @@ to do it the wrong way, so I made a whole infrastructure around
 the API so it is easy to extend and modify. The project consist
 of the following modules:
 
-###Domain
+### Domain
 
 Here lives the business models. Inside there exists an Entity
 folder which serves as namespace for business entities. These are
@@ -17,7 +17,7 @@ The mapping between Entities and Models is handled by AutoMapper
 and is configured in the `AddDomainMappings()` extension method
 for ease of use.
 
-###DataAccess
+### DataAccess
 
 This namespace holds the Repository Pattern and Unit of Work pattern definition
 and implementation. The idea behind Repositories is to abstract data stores
@@ -35,7 +35,7 @@ serves as an entrypoint for Repositories instances, and there is a couple
 of ways of implementing it. I choose to leverage the SaveChanges of 
 DbContexts to join repositories together on the same transaction.
 
-###Services
+### Services
 
 This is the Application Service Layer, where the business logic lives.
 Also, I provide here an unified interface for the notification system,
@@ -46,7 +46,7 @@ that the client sending events to a listening signalR connection would feel
 the same as the server pushing messages to Azure Service Bus, and both are
 interchangeable.
 
-###HiringTest
+### HiringTest
 
 The glue of our application back-end to conform the service API. It is
 automatically documented with swagger and provides the Controllers (The view part
@@ -55,14 +55,14 @@ manipulation and validation to feed the Service Layer and to change
 the presentation of the data (using the `Domain.Models`). Also, when
 necessary, Controllers calls notification system to push events to listeners.
 
-###HiringTest.Test
+### HiringTest.Test
 
 Simple demo Unit Testing for the HiringTest project. This covers the basics
 of testing, it Mocks some data, Mocks the Services using DepedencyInjection
 and checks the correct response from Controller and the invocation
 of the notification system as a requirement.
 
-###TestClientBlazor
+### TestClientBlazor
 
 This is the Client for the App. It uses Blazor Server as the hosting model.
 It consist of a welcome Page, with a side menu with navigation in it. The main
