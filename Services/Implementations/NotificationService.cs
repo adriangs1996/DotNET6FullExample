@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Domain.Models.Outputs;
 using Microsoft.AspNetCore.SignalR;
 using Services.Contracts;
@@ -7,26 +9,29 @@ namespace Services.Implementation
 {
     public class NotificationService : INotificationService
     {
-        private readonly IHubContext<NotificationHub, INotificationService> hubContext;
+        private readonly IHubContext<NotificationHub, INotificationHub> _hubContext;
 
-        public NotificationService(IHubContext<NotificationHub, INotificationService> hubContext)
+        public NotificationService(IHubContext<NotificationHub, INotificationHub> hubContext)
         {
-            this.hubContext = hubContext;
+            _hubContext = hubContext;
         }
 
         public async Task TestEntityAdded(TestEntityDetails entity)
         {
-            await hubContext.Clients.All.TestEntityAdded(entity);
+            Console.WriteLine("Sending Added notification to client");
+            await _hubContext.Clients.All.TestEntityAdded(entity);
         }
 
         public async Task TestEntityEdited(TestEntityDetails entity)
         {
-            await hubContext.Clients.All.TestEntityEdited(entity);
+            Console.WriteLine("Sending Edited notification to client");
+            await _hubContext.Clients.All.TestEntityEdited(entity);
         }
 
         public async Task TestEntityRemoved(TestEntityDetails entity)
         {
-            await hubContext.Clients.All.TestEntityRemoved(entity);
+            Console.WriteLine("Sending Removed notification to client");
+            await _hubContext.Clients.All.TestEntityRemoved(entity);
         }
     }
 }

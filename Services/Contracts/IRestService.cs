@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Domain.Models.Inputs;
 using Domain.Models.Outputs;
 

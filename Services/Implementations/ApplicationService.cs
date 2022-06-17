@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using DataAccess.Contracts.UnitOfWork;
 using Domain.Entities;

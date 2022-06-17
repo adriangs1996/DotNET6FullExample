@@ -2,13 +2,14 @@
 @inject IRestService _service
 @inject NavigationManager _navigationManager
 @inject ToastService _toastService
+@implements IAsyncDisposable
 
 
 <PageTitle> Test Entities </PageTitle>
 
 <h3> Test Entities </h3>
 
-@if (entities == null)
+@if (_entities == null)
 {
     <p>
         <em>Loading</em>
@@ -22,12 +23,12 @@ else
             <th>Name</th>
             <th>IsComplete</th>
             <th>
-                <button class="btn btn-success" @onclick="() => AddTestEntity()">Add</button>
+                <button class="btn btn-success" @onclick="AddTestEntity">Add</button>
             </th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var entity in entities)
+        @foreach (var entity in _entities)
         {
             <tr>
                 <td>@entity.Name</td>
@@ -48,11 +49,25 @@ else
 }
 
 @code {
-    private List<TestEntityDetails> entities;
+    private List<TestEntityDetails>? _entities;
+    private HubConnection? _hubConnection;
 
     protected override async Task OnInitializedAsync()
     {
-        entities = (await _service.GetEntities()).ToList();
+        _entities = (await _service.GetEntities()).ToList();
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(_navigationManager.ToAbsoluteUri("/notifications"))
+            .Build();
+
+        _hubConnection.On<TestEntityDetails>("TestEntityRemoved", details =>
+        {
+            _toastService.ShowToast($"Deleted {details.Name}", ToastLevel.Warning);
+            _entities = _entities.Where(e => e.Id != details.Id).ToList();
+            InvokeAsync(StateHasChanged);
+        });
+
+        await _hubConnection.StartAsync();
     }
 
     void EditTestEntity(long id)
@@ -67,10 +82,18 @@ else
 
     async Task DeleteTestEntity(long id)
     {
-        var entityToDelete = entities.First(e => e.Id == id);
+        var entityToDelete = _entities?.First(e => e.Id == id);
         await _service.DeleteEntity(id);
-        _toastService.ShowToast($"Deleted {entityToDelete.Name}", ToastLevel.Info);
-        entities = entities.Where(e => e.Id != entityToDelete.Id).ToList();
+        _toastService.ShowToast($"Deleted {entityToDelete?.Name}", ToastLevel.Info);
+        _entities = _entities?.Where(e => e.Id != entityToDelete?.Id).ToList();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
     }
 
 }

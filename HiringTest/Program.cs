@@ -1,5 +1,8 @@
 using DataAccess;
 using Domain;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Services;
 using Services.Implementation.Hubs;
 
@@ -41,7 +44,5 @@ app.UseCors("PermissivePolicy");
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapHub<NotificationHub>("/notifications");
 
 app.Run();
